@@ -99,14 +99,22 @@
   environment.systemPackages = with pkgs; [
   # text editors
   nano # Vscode is managed by home-manager under user.nix. go there for further configuration
+  
   # Version management system
   git
+  
   # github CLI
   gh
+  
   # Browser
   librewolf
+  
   # Proton VPN (very redundant) 
   proton-vpn
+  
+  # Office Suite
+  libreoffice
+  
   # Dev languages and tools
   go
   gopls
@@ -121,6 +129,7 @@
   gdb
   cmake
   clang-tools
+  
   # Basic CLI tools
   ripgrep
   zoxide
