@@ -26,6 +26,12 @@
       options = [ "subvol=home" ];
     };
 
+  fileSystems."/home/davy/Shared" =
+    { device = "/dev/disk/by-uuid/FA9C-9105";
+      fsType = "exfat";
+      options = [ "defaults" "nofail" "x-systemd.automount" "uid=1000" "gid=1000" "noatime" ];
+    };
+
   fileSystems."/nix" =
     { device = "/dev/mapper/luks-e1b7ccf5-df72-4064-8a69-c38973741075";
       fsType = "btrfs";
