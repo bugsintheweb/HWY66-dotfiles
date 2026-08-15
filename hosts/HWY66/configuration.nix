@@ -132,6 +132,13 @@
   
   # Basic CLI tools
   gparted
+    #gparted support tools for file types
+    exfatprogs # exfat
+    ntfs3g # NTFS
+    xfsprogs # XFS
+    f2fs-tools #F2FS
+    jfsutils #JFS
+    udftools #UDF
   ripgrep
   zoxide
   curl
