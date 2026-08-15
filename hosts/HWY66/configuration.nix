@@ -131,6 +131,7 @@
   clang-tools
   
   # Basic CLI tools
+  gparted
   ripgrep
   zoxide
   curl
