@@ -119,7 +119,7 @@
   go
   gopls
   delve
-  nodejs_22
+  nodejs_24
   pnpm
   typescript-language-server
   ruby
