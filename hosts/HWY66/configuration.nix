@@ -115,20 +115,7 @@
   # Office Suite
   libreoffice
   
-  # Dev languages and tools
-  go
-  gopls
-  delve
-  nodejs_24
-  pnpm
-  typescript-language-server
-  ruby
-  bundler
-  solargraph
-  gcc
-  gdb
-  cmake
-  clang-tools
+  # Dev languages and tools (to be added as needed)
   
   # Basic CLI tools
   gparted
