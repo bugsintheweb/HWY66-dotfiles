@@ -29,9 +29,12 @@
   };
 
   home.packages = with pkgs; [
+    # Proton apps
     proton-authenticator
     protonmail-desktop
-  ];
+    # winboat for windows functionallity
+    winboat 
+   ];
 
   home.file.".config/Code/User/settings.json".text = ''
     {
