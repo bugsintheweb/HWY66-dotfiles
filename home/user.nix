@@ -23,7 +23,7 @@
       settings = {
       "browser.search.defaultenginename" = "DuckDuckGo";
       "browser.search.order.1" = "DuckDuckGo";
-      "browser.startup.homepage" = "https://duckduckgo.com";
+      "browser.startup.homepage" = "https://search.nixos.org/packages?channel=26.05" ;
     };
    };
   };
@@ -32,7 +32,7 @@
     # Proton apps
     proton-authenticator
     protonmail-desktop
-    # winboat for windows functionallity
+    # winboat for windows functionality 
     winboat 
    ];
 
