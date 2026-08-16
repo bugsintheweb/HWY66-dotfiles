@@ -114,7 +114,10 @@
   
   # Libre Office Suite
   libreoffice
-      
+
+  # 7zip
+  py7zr
+    
   # Basic CLI tools
   gparted
     #gparted support tools for file types
@@ -132,7 +135,7 @@
   dysk
   btop
   iftop
-  iotop
+ iotop
   atop
   nvtopPackages.full
   wavemon
