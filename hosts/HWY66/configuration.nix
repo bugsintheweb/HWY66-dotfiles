@@ -20,7 +20,7 @@
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+  networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -55,9 +55,8 @@
     layout = "us";
     variant = "";
   };
-
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  #services.printing.enable = true;
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
@@ -82,7 +81,13 @@
   users.users."davy" = {
     isNormalUser = true;
     description = "Davy";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ 
+    "networkmanager" 
+    "wheel" 
+    "docker"
+    "kvm" 
+    "libvirtd"
+   ];
   };
 
   # Install Flakes.nix
@@ -92,35 +97,66 @@
   nixpkgs.config.allowUnfree = true;
  
   # Install docker
-  virtualisation.docker.enable = true; 
+  virtualisation.docker.enable = false; 
+
+  #Virtualization
+  # KVM permissions for user(s)
+  # Replace "yourUser" with your login username.
+  # If you manage users elsewhere, adjust accordingly.
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+      };
+    };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  # text editors
+  
+  #Vertulization tools  
+  virt-manager
+  qemu
+  # These are useful for debugging/libvirt administration:
+  libvirt
+  virt-viewer
+
+  # Text editors
   nano # Vscode is managed by home-manager under user.nix. go there for further configuration
   
   # Version management system
   git
   
-  # github CLI
+  # Github CLI
   gh
   
   # Browser
   librewolf
-  
+  chromium
+
   # Proton VPN (very redundant) 
   proton-vpn
   
   # Libre Office Suite
   libreoffice
 
-  # 7zip
-  py7zr
-    
+  # Dev languages and tools
+  go
+  gopls
+  delve
+  nodejs_22
+  pnpm
+  typescript-language-server
+  ruby
+  bundler
+  solargraph
+  gcc
+  gdb
+  cmake
+  clang-tools
+
   # Basic CLI tools
   gparted
-    #gparted support tools for file types
+    #Gparted support tools for file types
     exfatprogs # exfat
     ntfs3g # NTFS
     xfsprogs # XFS
@@ -135,7 +171,7 @@
   dysk
   btop
   iftop
- iotop
+  iotop
   atop
   nvtopPackages.full
   wavemon
