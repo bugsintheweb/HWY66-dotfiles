@@ -109,6 +109,28 @@
       };
     };
 
+  services.samba = {
+    enable = true;
+
+    # Samba global config (often enough to get started)
+    securityType = "user";
+
+    # Make sure samba can read the directory you want to share
+    shares = {
+      "shared" = {
+        path = "/srv/shared";
+        browseable = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+
+        # Optional but useful:
+        "create mask" = "0664";
+        "directory mask" = "0775";
+        "force user" = "davy";
+      };
+    };
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -133,6 +155,9 @@
   librewolf
   chromium
 
+  # 7zip for compression/decompression needs
+  p7zip
+  
   # Proton VPN (very redundant) 
   proton-vpn
   
