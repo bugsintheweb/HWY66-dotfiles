@@ -28,14 +28,31 @@
    };
   };
 
+  gtk = {
+  enable = true;
+  theme = {
+    name = "Adwaita-dark";
+    package = pkgs.gnome-themes-extra;
+  };
+  iconTheme = {
+    name = "Papirus-Dark";
+    package = pkgs.papirus-icon-theme;
+  };
+  cursorTheme = {
+    name = "Adwaita";
+    package = pkgs.adwaita-icon-theme;
+  };
+};
+
+  # Required for GSettings to apply properly
+  dconf.enable = true;
+
   home.packages = with pkgs; [
     # Proton apps
     proton-authenticator
-    protonmail-desktop
-    # winboat for windows functionality 
-    winboat 
+    protonmail-desktop   
    ];
-
+  
   home.file.".config/Code/User/settings.json".text = ''
     {
       "editor.formatOnSave": true,
