@@ -7,7 +7,12 @@
 
   programs.home-manager.enable = true;
   
-  programs.git.enable = true;
+  programs.git.enable = {
+    enable = true;
+    userName = "davy";
+    userEmail = "306048104+bugsintheweb@users.noreply.github.com";
+  };
+
   programs.zoxide.enable = true;
   programs.zsh.enable = true;
   
