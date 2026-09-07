@@ -7,7 +7,7 @@
 
   programs.home-manager.enable = true;
   
-  programs.git.enable = {
+  programs.git = {
     enable = true;
     userName = "davy";
     userEmail = "306048104+bugsintheweb@users.noreply.github.com";
