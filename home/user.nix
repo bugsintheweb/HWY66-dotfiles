@@ -1,32 +1,5 @@
 { pkgs, config, zen-browser, ... }: {
 
-let
-  # =========================================================================
-  # OMARCHY-INSPIRED WORKFLOW PANEL SCRIPT
-  # =========================================================================
-  # A custom executable script that passes searchable options into Fuzzel dmenu
-  workflowPanel = pkgs.writeShellScriptBin "workflow-panel" ''
-    OPTIONS="🌐 Open Zen Browser\n📬 Launch Proton Mail Stack\n💻 Open VS Code Projects\n🔒 Lock Screen\n🔄 Reboot System\n🛑 Shutdown Workstation"
-
-    CHOICE=$(echo -e "$OPTIONS" | ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt="Workflow Tasks: " --lines=6)
-
-    case "$CHOICE" in
-      *"Open Zen Browser"*)
-        zen-browser ;;
-      *"Launch Proton Mail Stack"*)
-        protonmail-desktop & proton-authenticator ;;
-      *"Open VS Code Projects"*)
-        code ~/nixos-workstation ;;
-      *"Lock Screen"*)
-        echo "Lock command goes here (e.g. hyprlock or swaylock)" ;;
-      *"Reboot System"*)
-        systemctl reboot ;;
-      *"Shutdown Workstation"*)
-        systemctl poweroff ;;
-    esac
-  '';
-in {
-
   home.username = "davy";
   home.homeDirectory = "/home/davy";
   home.stateVersion = "26.05";
@@ -86,6 +59,32 @@ in {
     awww
     workFlowPanel
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+    let
+  # =========================================================================
+  # OMARCHY-INSPIRED WORKFLOW PANEL SCRIPT
+  # =========================================================================
+  # A custom executable script that passes searchable options into Fuzzel dmenu
+  (pkgs.writeShellScriptBin "workflow-panel" ''
+    OPTIONS="🌐 Open Zen Browser\n📬 Launch Proton Mail Stack\n💻 Open VS Code Projects\n🔒 Lock Screen\n🔄 Reboot System\n🛑 Shutdown Workstation"
+
+    CHOICE=$(echo -e "$OPTIONS" | ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt="Workflow Tasks: " --lines=6)
+
+    case "$CHOICE" in
+      *"Open Zen Browser"*)
+        zen-browser ;;
+      *"Launch Proton Mail Stack"*)
+        protonmail-desktop & proton-authenticator ;;
+      *"Open VS Code Projects"*)
+        code ~/nixos-workstation ;;
+      *"Lock Screen"*)
+        echo "Lock command goes here (e.g. hyprlock or swaylock)" ;;
+      *"Reboot System"*)
+        systemctl reboot ;;
+      *"Shutdown Workstation"*)
+        systemctl poweroff ;;
+    esac
+  '';
   ];
 
   # =========================================================================
