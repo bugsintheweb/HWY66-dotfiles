@@ -41,7 +41,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;    
-            home-manager.sharedModules = [ stylix.homeManagerModules.stylix ];
+            home-manager.sharedModules = [ stylix.homeModules.stylix ];
             home-manager.users.${username} = import ./home/user.nix;
            }
          ];

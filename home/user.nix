@@ -20,7 +20,6 @@
     package = pkgs.vscode;
   };
 
-  # Required for Stylix dark rules to bind perfectly inside your system
   dconf.enable = true;
 
   # =========================================================================
@@ -28,16 +27,14 @@
   # =========================================================================
   stylix = {
     enable = true;
-    image = ./wallpaper.jpg; # <-- Staged via git add home/wallpaper.jpg!
+    image = ./wallpaper.jpg; 
     
-    # Curated Base16 theme engine (Tokyo Night brings beautiful desktop contrast)
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night.yaml";
+    # FIX: Pointing to the palette scheme safely via built-in system mapping strings
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyonight.yaml"; 
     polarity = "dark";
 
-    # Unified font handling injected across your apps, system menus, & terminal
     fonts = {
       monospace = {
-        # Fixed the font path attribute string cleanly
         package = pkgs.jetbrains-mono;
         name = "JetBrains Mono";
       };
@@ -47,7 +44,6 @@
       };
     };
 
-    # Explicitly force Stylix to auto-generate matching GTK apps & icon profiles
     targets.gtk.enable = true;
   };
 
@@ -57,18 +53,11 @@
   home.packages = with pkgs; [
     proton-authenticator
     protonmail-desktop   
-
-    # Ricing & UI Utilities
-    fuzzel        # Ultra-fast, minimal app launcher (Auto-themed by Stylix!)
-    alacritty     # Snappy, hardware-accelerated terminal (Auto-themed by Stylix!)
-
-    # Main workflow browser pulled from custom flake input
+    fuzzel        
+    alacritty     
     zen-browser.packages.${pkgs.system}.default
   ];
   
-  # =========================================================================
-  # VS CODE DEVELOPER PROFILES
-  # =========================================================================
   home.file.".config/Code/User/settings.json".text = ''
     {
       "editor.formatOnSave": true,
@@ -87,66 +76,89 @@
   '';
 
   # =========================================================================
-  # NIRI CONFIGURATION (NATIVE KDL IMPLEMENTATION)
+  # HYPRLAND CONFIGURATION
   # =========================================================================
-  xdg.configFile."niri/config.kdl".text = ''
-    input {
-        keyboard {
-            xkb {
-                layout "us"
-            }
-        }
-        touchpad {
-            tap
-            natural-scroll
-        }
-    }
+  wayland.windowManager.hyprland = {
+    enable = true;
+    settings = {
+      env = [
+        "XDG_CURRENT_DESKTOP,Hyprland"
+        "XDG_SESSION_TYPE,wayland"
+        "XDG_SESSION_DESKTOP,Hyprland"
+      ];
 
-    layout {
-        gaps 12
-        default-column-width { proportion 0.5; }
-        
-        focus-ring {
-            enable
-            width 3
-            active-color "#${config.lib.stylix.colors.base0D}"
-            inactive-color "#${config.lib.stylix.colors.base02}"
-        }
-    }
+      monitor = ",preferred,auto,1";
 
-    binds {
-        // System & Core Applications
-        "Mod+Return" { spawn "alacritty"; }
-        "Mod+Space" { spawn "fuzzel"; }
-        "Mod+Q" { close-window; }
-        
-        // Custom Omarchy Menu Trigger
-        "Mod+Alt+Space" { spawn "fuzzel" "--dmenu" "--prompt=Workflow Tasks: "; }
+      input = {
+        kb_layout = "us";
+        follow_mouse = 1;
+        touchpad = {
+          natural_scroll = true;
+          tap-to-click = true;
+        };
+      };
 
-        // Navigation (Scrolling Ribbon)
-        "Mod+Left"  { focus-column-left; }
-        "Mod+Right" { focus-column-right; }
-        "Mod+H"     { focus-column-left; }
-        "Mod+L"     { focus-column-right; }
+      general = {
+        gaps_in = 6;
+        gaps_out = 12;
+        border_size = 2;
 
-        "Mod+Ctrl+Left"  { move-column-left; }
-        "Mod+Ctrl+Right" { move-column-right; }
-        "Mod+Ctrl+H"     { move-column-left; }
-        "Mod+Ctrl+L"     { move-column-right; }
+        "col.active_border" = "rgb(${config.lib.stylix.colors.base0D}) rgb(${config.lib.stylix.colors.base0E}) 45deg";
+        "col.inactive_border" = "rgb(${config.lib.stylix.colors.base02})";
 
-        // Sizing
-        "Mod+R" { switch-preset-column-width; }
-        "Mod+F" { maximize-column; }
-        
-        // Workspaces
-        "Mod+Up"   { focus-workspace-up; }
-        "Mod+Down" { focus-workspace-down; }
-        "Mod+Shift+Up"   { move-column-to-workspace-up; }
-        "Mod+Shift+Down" { move-column-to-workspace-down; }
-    }
+        layout = "dwindle";
+      };
 
-    animations {
-        slowdown 1.0
-    }
-  '';
+      decoration = {
+        rounding = 10;
+        blur = {
+          enabled = true;
+          size = 5;
+          passes = 2;
+        };
+      };
+
+      animations = {
+        enabled = true;
+        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+        animation = [
+          "windows, 1, 5, myBezier"
+          "windowsOut, 1, 5, default, popup 80%"
+          "border, 1, 10, default"
+          "fade, 1, 7, default"
+          "workspaces, 1, 6, default"
+        ];
+      };
+
+      bind = [
+        "SUPER, Return, exec, alacritty"
+        "SUPER, Space, exec, fuzzel"
+        "SUPER, Q, killactive,"
+        "SUPER, M, exit,"
+        "SUPER, F, togglefloating,"
+
+        "SUPER_ALT, Space, exec, fuzzel --dmenu --prompt='Workflow Tasks: '"
+
+        "SUPER, h, movefocus, l"
+        "SUPER, l, movefocus, r"
+        "SUPER, k, movefocus, u"
+        "SUPER, j, movefocus, d"
+
+        "SUPER, 1, workspace, 1"
+        "SUPER, 2, workspace, 2"
+        "SUPER, 3, workspace, 3"
+        "SUPER, 4, workspace, 4"
+
+        "SUPER SHIFT, 1, movetoworkspace, 1"
+        "SUPER SHIFT, 2, movetoworkspace, 2"
+        "SUPER SHIFT, 3, movetoworkspace, 3"
+        "SUPER SHIFT, 4, movetoworkspace, 4"
+      ];
+
+      gestures = {
+        workspace_swipe = true;
+        workspace_swipe_fingers = 3;
+      };
+    };
+  };
 }
