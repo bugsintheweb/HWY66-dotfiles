@@ -30,7 +30,7 @@
     image = ./wallpaper.jpg; 
     
     # FIX: Pointing to the palette scheme safely via built-in system mapping strings
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyonight.yaml"; 
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-dark.yaml"; 
     polarity = "dark";
 
     fonts = {
@@ -57,23 +57,6 @@
     alacritty     
     zen-browser.packages.${pkgs.system}.default
   ];
-  
-  home.file.".config/Code/User/settings.json".text = ''
-    {
-      "editor.formatOnSave": true,
-      "files.autoSave": "onFocusChange",
-      "terminal.integrated.defaultProfile.linux": "zsh" 
-    }
-  '';
-
-  home.file.".config/Code/User/keybindings.json".text = ''
-   [
-     {
-       "key": "ctrl+shift+p",
-       "command": "workbench.action.showCommands"
-     }
-   ]
-  '';
 
   # =========================================================================
   # HYPRLAND CONFIGURATION
@@ -130,25 +113,30 @@
         ];
       };
 
-      bind = [
+bind = [
+        # Core application shortcuts
         "SUPER, Return, exec, alacritty"
         "SUPER, Space, exec, fuzzel"
         "SUPER, Q, killactive,"
         "SUPER, M, exit,"
         "SUPER, F, togglefloating,"
 
+        # Custom Global Menu Shortcut (Super + Alt + Space)
         "SUPER_ALT, Space, exec, fuzzel --dmenu --prompt='Workflow Tasks: '"
 
+        # Focus Shifts (Vim motions)
         "SUPER, h, movefocus, l"
         "SUPER, l, movefocus, r"
         "SUPER, k, movefocus, u"
         "SUPER, j, movefocus, d"
 
+        # Workspace switching
         "SUPER, 1, workspace, 1"
         "SUPER, 2, workspace, 2"
         "SUPER, 3, workspace, 3"
         "SUPER, 4, workspace, 4"
 
+        # Moving windows to specified workspaces
         "SUPER SHIFT, 1, movetoworkspace, 1"
         "SUPER SHIFT, 2, movetoworkspace, 2"
         "SUPER SHIFT, 3, movetoworkspace, 3"
