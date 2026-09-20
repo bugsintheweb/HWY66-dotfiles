@@ -5,47 +5,27 @@
   home.stateVersion = "26.05";
 
   programs.home-manager.enable = true;
-  
+
+  # Git Configuration
   programs.git = {
     enable = true;
-    settings.user.Name = "davy";
-    settings.user.Email = "306048104+bugsintheweb@://github.com";
+    settings = {
+      user = {
+        name = "davy";
+        email = "306048104+bugsintheweb@users.noreply.github.com";
+      };
+    };
   };
 
   programs.zoxide.enable = true;
   programs.zsh.enable = true;
-  
+
   programs.vscode = {
     enable = true;
     package = pkgs.vscode;
   };
 
   dconf.enable = true;
-
-  # =========================================================================
-  # STYLIX AUTO-THEMING SYSTEM (UNIFIED ENGINE)
-  # =========================================================================
-  stylix = {
-    enable = true;
-    image = ./wallpaper.jpg; 
-    
-    # FIX: Pointing to the palette scheme safely via built-in system mapping strings
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-dark.yaml"; 
-    polarity = "dark";
-
-    fonts = {
-      monospace = {
-        package = pkgs.jetbrains-mono;
-        name = "JetBrains Mono";
-      };
-      sansSerif = {
-        package = pkgs.noto-fonts;
-        name = "Noto Sans";
-      };
-    };
-
-    targets.gtk.enable = true;
-  };
 
   # =========================================================================
   # PACKAGES & TOOLS
@@ -57,135 +37,128 @@
     alacritty     
     waybar
     awww
+    xwayland-satellite # Allows X11 apps to run inside Niri
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
-  # =========================================================================
-  # OMARCHY-INSPIRED WORKFLOW PANEL SCRIPT
-  # =========================================================================
-  # A custom executable script that passes searchable options into Fuzzel dmenu
-  (pkgs.writeShellScriptBin "workflow-panel" ''
-    OPTIONS="🌐 Open Zen Browser\n📬 Launch Proton Mail Stack\n💻 Open VS Code Projects\n🔒 Lock Screen\n🔄 Reboot System\n🛑 Shutdown Workstation"
+    # Omarchy-style CLI utilities
+    ripgrep
+    fd
+    eza
+    bat
+    fzf
+    lazygit
+    wl-clipboard
 
-    CHOICE=$(echo -e "$OPTIONS" | ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt="Workflow Tasks: " --lines=6)
+    # Custom Workflow Menu
+    (pkgs.writeShellScriptBin "workflow-panel" ''
+      OPTIONS="🌐 Open Zen Browser\n📬 Launch Proton Mail Stack\n💻 Open VS Code Projects\n🔄 Reboot System\n🛑 Shutdown Workstation"
 
-    case "$CHOICE" in
-      *"Open Zen Browser"*)
-        zen-browser ;;
-      *"Launch Proton Mail Stack"*)
-        protonmail-desktop & proton-authenticator ;;
-      *"Open VS Code Projects"*)
-        code ~/nixos-workstation ;;
-      *"Lock Screen"*)
-        echo "Lock command goes here (e.g. hyprlock or swaylock)" ;;
-      *"Reboot System"*)
-        systemctl reboot ;;
-      *"Shutdown Workstation"*)
-        systemctl poweroff ;;
-    esac
-  '')
+      CHOICE=$(echo -e "$OPTIONS" | ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt="Workflow Tasks: " --lines=5)
+
+      case "$CHOICE" in
+        *"Open Zen Browser"*)
+          zen-browser ;;
+        *"Launch Proton Mail Stack"*)
+          protonmail-desktop & proton-authenticator ;;
+        *"Open VS Code Projects"*)
+          code ~/nixos-workstation ;;
+        *"Reboot System"*)
+          systemctl reboot ;;
+        *"Shutdown Workstation"*)
+          systemctl poweroff ;;
+      esac
+    '')
   ];
 
   # =========================================================================
-  # HYPRLAND CONFIGURATION
+  # NIRI SCROLLING TILE MANAGER CONFIGURATION
   # =========================================================================
-  wayland.windowManager.hyprland = {
-    enable = true;
-    settings = {
-      
-      exec-once = [
-        "awww-daemon"                                     # Starts the wallpaper engine
-        "awww img ${./wallpaper.jpg}"                     # Smoothly loads your staged image
-        "waybar"                                          # Launches your status bar
-      ];
+  xdg.configFile."niri/config.kdl".text = ''
+    // Layout and Window Styling
+    layout {
+      gaps 8
+      center-focused-column "never"
 
-      env = [
-        "XDG_CURRENT_DESKTOP,Hyprland"
-        "XDG_SESSION_TYPE,wayland"
-        "XDG_SESSION_DESKTOP,Hyprland"
-      ];
+      preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+      }
 
-      monitor = ",preferred,auto,1";
+      default-column-width { proportion 0.5; }
 
-      input = {
-        kb_layout = "us";
-        follow_mouse = 1;
-        touchpad = {
-          natural_scroll = true;
-          tap-to-click = true;
-        };
-      };
+      focus-ring {
+        width 2
+        active-color "#${config.lib.stylix.colors.base0D}"
+        inactive-color "#${config.lib.stylix.colors.base02}"
+      }
+    }
 
-      general = {
-        gaps_in = 6;
-        gaps_out = 12;
-        border_size = 2;
+    // Autostart background processes
+    spawn-at-startup "awww-daemon"
+    spawn-at-startup "awww" "img" "${./wallpaper.jpg}"
+    spawn-at-startup "waybar"
+    spawn-at-startup "xwayland-satellite"
 
-        "col.active_border" = "rgb(${config.lib.stylix.colors.base0D}) rgb(${config.lib.stylix.colors.base0E}) 45deg";
-        "col.inactive_border" = "rgb(${config.lib.stylix.colors.base02})";
+    // Input configuration
+    input {
+      keyboard {
+        xkb {
+          layout "us"
+        }
+      }
+      touchpad {
+        tap
+        natural-scroll
+      }
+      focus-follows-mouse
+    }
 
-        layout = "dwindle";
-      };
+    // Keybindings
+    binds {
+      // Core launchers
+      Mod+Return { spawn "alacritty"; }
+      Mod+D { spawn "fuzzel"; }
+      Mod+Alt+Space { spawn "workflow-panel"; }
 
-      decoration = {
-        rounding = 10;
-        blur = {
-          enabled = true;
-          size = 5;
-          passes = 2;
-        };
-      };
+      // Window controls
+      Mod+Shift+Q { close-window; }
+      Mod+Shift+E { quit; }
+      Mod+F { maximize-column; }
+      Mod+Shift+F { fullscreen-window; }
 
-      animations = {
-        enabled = true;
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-        animation = [
-          "windows, 1, 5, myBezier"
-          "windowsOut, 1, 5, default, popup 80%"
-          "border, 1, 10, default"
-          "fade, 1, 7, default"
-          "workspaces, 1, 6, default"
-        ];
-      };
+      // Vim-style Column & Window navigation
+      Mod+H { focus-column-left; }
+      Mod+L { focus-column-right; }
+      Mod+J { focus-window-down; }
+      Mod+K { focus-window-up; }
 
-bind = [
-        # Core application shortcuts
-        "SUPER, Return, exec, alacritty"
-        "SUPER, D, exec, fuzzel"
-        "SUPER_SHIFT, Q, killactive,"
-        "SUPER_SHIFT, E, exit,"
-        "SUPER, F, togglefloating,"
+      // Column & Window movement
+      Mod+Shift+H { move-column-left; }
+      Mod+Shift+L { move-column-right; }
+      Mod+Shift+J { move-window-down; }
+      Mod+Shift+K { move-window-up; }
 
-        # Custom Global Menu Shortcut (Super + Alt + Space)
-        "SUPER_ALT, Space, exec, workFlow-panel"
+      // Workspace switching (vertical navigation in Niri)
+      Mod+1 { focus-workspace 1; }
+      Mod+2 { focus-workspace 2; }
+      Mod+3 { focus-workspace 3; }
+      Mod+4 { focus-workspace 4; }
 
-        # Focus Shifts (Vim motions)
-        "SUPER, h, movefocus, l"
-        "SUPER, l, movefocus, r"
-        "SUPER, k, movefocus, u"
-        "SUPER, j, movefocus, d"
+      Mod+Shift+1 { move-window-to-workspace 1; }
+      Mod+Shift+2 { move-window-to-workspace 2; }
+      Mod+Shift+3 { move-window-to-workspace 3; }
+      Mod+Shift+4 { move-window-to-workspace 4; }
 
-        # Workspace switching
-        "SUPER, 1, workspace, 1"
-        "SUPER, 2, workspace, 2"
-        "SUPER, 3, workspace, 3"
-        "SUPER, 4, workspace, 4"
-
-        # Moving windows to specified workspaces
-        "SUPER SHIFT, 1, movetoworkspace, 1"
-        "SUPER SHIFT, 2, movetoworkspace, 2"
-        "SUPER SHIFT, 3, movetoworkspace, 3"
-        "SUPER SHIFT, 4, movetoworkspace, 4"
-      ];
-
-      gestures = {
-        workspace_swipe = true;
-        workspace_swipe_fingers = 3;
-      };
-    };
-  };
+      // Column resizing
+      Mod+R { switch-preset-column-width; }
+      Mod+Minus { set-column-width "-10%"; }
+      Mod+Equal { set-column-width "+10%"; }
+    }
+  '';
 
   # =========================================================================
-  # WAYBAR STRUCTURE BLOCK
+  # WAYBAR FOR NIRI
   # =========================================================================
   programs.waybar = {
     enable = true;
@@ -195,14 +168,17 @@ bind = [
         position = "top";
         height = 36;
         spacing = 4;
-        modules-left = [ "hyprland/workspaces" "hyprland/submap" ];
+        modules-left = [ "niri/workspaces" "niri/window" ];
         modules-center = [ "clock" ];
         modules-right = [ "cpu" "memory" "tray" ];
 
-        "hyprland/workspaces" = {
-          disable-scroll = true;
-          all-outputs = true;
+        "niri/workspaces" = {
           format = "{name}";
+        };
+
+        "niri/window" = {
+          format = "{title}";
+          max-length = 40;
         };
 
         "clock" = {
@@ -221,5 +197,4 @@ bind = [
       };
     };
   };
-
 }

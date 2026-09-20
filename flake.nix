@@ -25,7 +25,27 @@
 
           stylix.nixosModules.stylix
 
-          ({ pkgs, ... }: {
+({ pkgs, ... }: {
+            stylix = {
+              enable = true;
+              image = ./home/wallpaper.jpg; 
+              base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-dark.yaml"; 
+              polarity = "dark";
+
+              fonts = {
+                monospace = {
+                  package = pkgs.jetbrains-mono;
+                  name = "JetBrains Mono";
+                };
+                sansSerif = {
+                  package = pkgs.noto-fonts;
+                  name = "Noto Sans";
+                };
+              };
+
+              targets.gtk.enable = true;
+            };
+
             programs.niri.enable = true;
             
             xdg.portal = {
@@ -35,16 +55,14 @@
             };
           })
 
-
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;    
             home-manager.extraSpecialArgs = { inherit zen-browser; };
-            home-manager.sharedModules = [ stylix.homeModules.stylix ];
             home-manager.users.${username} = import ./home/user.nix;
-           }
-         ];
-       };
-     };
+          }
+        ];
+      };
+    };
 }
