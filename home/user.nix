@@ -8,8 +8,8 @@
   
   programs.git = {
     enable = true;
-    userName = "davy";
-    userEmail = "306048104+bugsintheweb@://github.com";
+    settings.user.Name = "davy";
+    settings.user.Email = "306048104+bugsintheweb@://github.com";
   };
 
   programs.zoxide.enable = true;
@@ -55,6 +55,8 @@
     protonmail-desktop   
     fuzzel        
     alacritty     
+    waybar
+    swww
     zen-browser.packages.${pkgs.system}.default
   ];
 
@@ -64,6 +66,13 @@
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
+      
+      exec-once = [
+        "swww-daemon"                                     # Starts the wallpaper engine
+        "swww img ${./wallpaper.jpg}"                     # Smoothly loads your staged image
+        "waybar"                                          # Launches your status bar
+      ];
+
       env = [
         "XDG_CURRENT_DESKTOP,Hyprland"
         "XDG_SESSION_TYPE,wayland"
