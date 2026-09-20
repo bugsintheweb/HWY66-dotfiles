@@ -1,5 +1,32 @@
 { pkgs, config, zen-browser, ... }: {
 
+let
+  # =========================================================================
+  # OMARCHY-INSPIRED WORKFLOW PANEL SCRIPT
+  # =========================================================================
+  # A custom executable script that passes searchable options into Fuzzel dmenu
+  workflowPanel = pkgs.writeShellScriptBin "workflow-panel" ''
+    OPTIONS="🌐 Open Zen Browser\n📬 Launch Proton Mail Stack\n💻 Open VS Code Projects\n🔒 Lock Screen\n🔄 Reboot System\n🛑 Shutdown Workstation"
+
+    CHOICE=$(echo -e "$OPTIONS" | ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt="Workflow Tasks: " --lines=6)
+
+    case "$CHOICE" in
+      *"Open Zen Browser"*)
+        zen-browser ;;
+      *"Launch Proton Mail Stack"*)
+        protonmail-desktop & proton-authenticator ;;
+      *"Open VS Code Projects"*)
+        code ~/nixos-workstation ;;
+      *"Lock Screen"*)
+        echo "Lock command goes here (e.g. hyprlock or swaylock)" ;;
+      *"Reboot System"*)
+        systemctl reboot ;;
+      *"Shutdown Workstation"*)
+        systemctl poweroff ;;
+    esac
+  '';
+in {
+
   home.username = "davy";
   home.homeDirectory = "/home/davy";
   home.stateVersion = "26.05";
@@ -57,6 +84,7 @@
     alacritty     
     waybar
     awww
+    workFlowPanel
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
@@ -125,13 +153,13 @@
 bind = [
         # Core application shortcuts
         "SUPER, Return, exec, alacritty"
-        "SUPER, Space, exec, fuzzel"
-        "SUPER, Q, killactive,"
-        "SUPER, M, exit,"
+        "SUPER, D, exec, fuzzel"
+        "SUPER_SHIFT, Q, killactive,"
+        "SUPER_SHIFT, E, exit,"
         "SUPER, F, togglefloating,"
 
         # Custom Global Menu Shortcut (Super + Alt + Space)
-        "SUPER_ALT, Space, exec, fuzzel --dmenu --prompt='Workflow Tasks: '"
+        "SUPER_ALT, Space, exec, workFlow-panel"
 
         # Focus Shifts (Vim motions)
         "SUPER, h, movefocus, l"
@@ -158,4 +186,43 @@ bind = [
       };
     };
   };
+
+  # =========================================================================
+  # WAYBAR STRUCTURE BLOCK
+  # =========================================================================
+  programs.waybar = {
+    enable = true;
+    settings = {
+      mainBar = {
+        layer = "top";
+        position = "top";
+        height = 36;
+        spacing = 4;
+        modules-left = [ "hyprland/workspaces" "hyprland/submap" ];
+        modules-center = [ "clock" ];
+        modules-right = [ "cpu" "memory" "tray" ];
+
+        "hyprland/workspaces" = {
+          disable-scroll = true;
+          all-outputs = true;
+          format = "{name}";
+        };
+
+        "clock" = {
+          format = "{:%H:%M - %a, %b %d}";
+          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+        };
+
+        "cpu" = {
+          format = "CPU: {usage}%";
+          tooltip = false;
+        };
+
+        "memory" = {
+          format = "RAM: {}%";
+        };
+      };
+    };
+  };
+
 }
