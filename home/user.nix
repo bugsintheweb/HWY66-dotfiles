@@ -57,10 +57,8 @@
     alacritty     
     waybar
     awww
-    workFlowPanel
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
-    let
   # =========================================================================
   # OMARCHY-INSPIRED WORKFLOW PANEL SCRIPT
   # =========================================================================
@@ -84,7 +82,7 @@
       *"Shutdown Workstation"*)
         systemctl poweroff ;;
     esac
-  '';
+  '')
   ];
 
   # =========================================================================
