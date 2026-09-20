@@ -1,6 +1,5 @@
-{ pkgs, config, zen-browser, ... }:
+{ pkgs, config, zen-browser, ... }: {
 
-{
   home.username = "davy";
   home.homeDirectory = "/home/davy";
   home.stateVersion = "26.05";
@@ -10,7 +9,7 @@
   programs.git = {
     enable = true;
     userName = "davy";
-    userEmail = "306048104+bugsintheweb@users.noreply.github.com";
+    userEmail = "306048104+bugsintheweb@://github.com";
   };
 
   programs.zoxide.enable = true;
@@ -21,6 +20,7 @@
     package = pkgs.vscode;
   };
 
+  # Required for Stylix dark rules to bind perfectly inside your system
   dconf.enable = true;
 
   # =========================================================================
@@ -28,7 +28,7 @@
   # =========================================================================
   stylix = {
     enable = true;
-    image = ./wallpaper.jpg; # <-- Drop your favorite wallpaper here!
+    image = ./wallpaper.jpg; # <-- Staged via git add home/wallpaper.jpg!
     
     # Curated Base16 theme engine (Tokyo Night brings beautiful desktop contrast)
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night.yaml";
@@ -37,8 +37,9 @@
     # Unified font handling injected across your apps, system menus, & terminal
     fonts = {
       monospace = {
-        package = pkgs.nerd-fonts.jet-brains-mono;
-        name = "JetBrainsMono Nerd Font";
+        # Fixed the font path attribute string cleanly
+        package = pkgs.jetbrains-mono;
+        name = "JetBrains Mono";
       };
       sansSerif = {
         package = pkgs.noto-fonts;
@@ -86,68 +87,66 @@
   '';
 
   # =========================================================================
-  # NIRI SCROLLING TILING CONFIGURATION
+  # NIRI CONFIGURATION (NATIVE KDL IMPLEMENTATION)
   # =========================================================================
-  programs.niri = {
-    settings = {
-      input = {
-        keyboard.xkb.layout = "us";
-        touchpad = {
-          tap = true;
-          natural-scroll = true; # Highly tactile horizontal timeline flow
-        };
-      };
+  xdg.configFile."niri/config.kdl".text = ''
+    input {
+        keyboard {
+            xkb {
+                layout "us"
+            }
+        }
+        touchpad {
+            tap
+            natural-scroll
+        }
+    }
 
-      layout = {
-        gaps = 12;
-        default-column-width = { proportion = 0.5; };
+    layout {
+        gaps 12
+        default-column-width { proportion 0.5; }
         
-        # Niri active selection frame colored directly by Stylix accent hooks
-        focus-ring = {
-          enable = true;
-          width = 3;
-          active.color = "#${config.lib.stylix.colors.base0D}";   
-          inactive.color = "#${config.lib.stylix.colors.base02}"; 
-        };
-      };
+        focus-ring {
+            enable
+            width 3
+            active-color "#${config.lib.stylix.colors.base0D}"
+            inactive-color "#${config.lib.stylix.colors.base02}"
+        }
+    }
 
-      # Omarchy inspired keyboard layout maps
-      binds = {
-        # System & Core Applications
-        "Mod+Return".action.spawn = [ "alacritty" ];
-        "Mod+Space".action.spawn = [ "fuzzel" ];     
-        "Mod+Q".action.close-window = [];
+    binds {
+        // System & Core Applications
+        "Mod+Return" { spawn "alacritty"; }
+        "Mod+Space" { spawn "fuzzel"; }
+        "Mod+Q" { close-window; }
         
-        # Omarchy Custom Workflow Menu Shortcut
-        "Mod+Alt+Space".action.spawn = [ "fuzzel" "--dmenu" "--prompt=Workflow Tasks: " ];
+        // Custom Omarchy Menu Trigger
+        "Mod+Alt+Space" { spawn "fuzzel" "--dmenu" "--prompt=Workflow Tasks: "; }
 
-        # Navigation: Scrolling horizontally across the infinite ribbon
-        "Mod+Left".action.focus-column-left = [];
-        "Mod+Right".action.focus-column-right = [];
-        "Mod+H".action.focus-column-left = [];      
-        "Mod+L".action.focus-column-right = [];
+        // Navigation (Scrolling Ribbon)
+        "Mod+Left"  { focus-column-left; }
+        "Mod+Right" { focus-column-right; }
+        "Mod+H"     { focus-column-left; }
+        "Mod+L"     { focus-column-right; }
 
-        # Shifting window objects on the ribbon
-        "Mod+Ctrl+Left".action.move-column-left = [];
-        "Mod+Ctrl+Right".action.move-column-right = [];
-        "Mod+Ctrl+H".action.move-column-left = [];
-        "Mod+Ctrl+L".action.move-column-right = [];
+        "Mod+Ctrl+Left"  { move-column-left; }
+        "Mod+Ctrl+Right" { move-column-right; }
+        "Mod+Ctrl+H"     { move-column-left; }
+        "Mod+Ctrl+L"     { move-column-right; }
 
-        # Infinite Ribbon Resizing
-        "Mod+R".action.switch-preset-column-width = []; 
-        "Mod+F".action.maximize-column = [];            
+        // Sizing
+        "Mod+R" { switch-preset-column-width; }
+        "Mod+F" { maximize-column; }
         
-        # Workspaces (Endless horizontal ribbons stacked vertically)
-        "Mod+Up".action.focus-workspace-up = [];
-        "Mod+Down".action.focus-workspace-down = [];
-        "Mod+Shift+Up".action.move-column-to-workspace-up = [];
-        "Mod+Shift+Down".action.move-column-to-workspace-down = [];
-      };
+        // Workspaces
+        "Mod+Up"   { focus-workspace-up; }
+        "Mod+Down" { focus-workspace-down; }
+        "Mod+Shift+Up"   { move-column-to-workspace-up; }
+        "Mod+Shift+Down" { move-column-to-workspace-down; }
+    }
 
-      animations = {
-        enable = true;
-        slowdown = 1.0;
-      };
-    };
-  };
+    animations {
+        slowdown 1.0
+    }
+  '';
 }
