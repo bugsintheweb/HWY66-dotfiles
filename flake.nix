@@ -1,13 +1,17 @@
 {
-  description = "NixOS FUAustin config with Home Manager";
+  description = "NixOS HWY66 config with Home Manager";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     home-manager.url = "github:nix-community/home-manager/release-26.05";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";  
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    stylix.url = "github:danth/stylix/release-26.05";
+    stylix.inputs.nixpkgs.follows = "nixpkgs";
+    stylix.inputs.home-manager.follows = "home-manager";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, zen-browser, stylix, ... }:
     let
       system = "x86_64-linux";
       username = "davy";
@@ -15,8 +19,24 @@
     in {
       nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit zen-browser; };
+
         modules = [
           ./hosts/HWY66/configuration.nix
+
+          stylix.nixosModules.stylix
+
+          ({ pkgs, ... }: {
+            programs.niri.enable = true;
+            
+            xdg.portal = {
+              enable = true;
+              extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+              config.common.default = "*";
+            };
+          })
+
+
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
@@ -27,5 +47,3 @@
        };
      };
 }
-
- 
