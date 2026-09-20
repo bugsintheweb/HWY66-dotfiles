@@ -56,8 +56,8 @@
     fuzzel        
     alacritty     
     waybar
-    swww
-    zen-browser.packages.${pkgs.system}.default
+    awww
+    zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # =========================================================================
@@ -68,8 +68,8 @@
     settings = {
       
       exec-once = [
-        "swww-daemon"                                     # Starts the wallpaper engine
-        "swww img ${./wallpaper.jpg}"                     # Smoothly loads your staged image
+        "awww-daemon"                                     # Starts the wallpaper engine
+        "awww img ${./wallpaper.jpg}"                     # Smoothly loads your staged image
         "waybar"                                          # Launches your status bar
       ];
 
