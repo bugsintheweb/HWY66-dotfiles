@@ -109,26 +109,26 @@
       };
     };
 
-  services.samba = {
-    enable = true;
+#  services.samba = {
+#    enable = true;
     
-    settings = {
-      global = {
-        security = "user";
-    };
+#    settings = {
+#      global = {
+#        security = "user";
+#    };
   
     # shares go here
-    shares = {
-        path = "/srv/shared";
-        browseable = "yes";
-        "read only" = "no";
+#    shares = {
+#        path = "/srv/shared";
+#        browseable = "yes";
+#        "read only" = "no";
 
         # Optional but useful:
-        "create mask" = "0664";
-        "directory mask" = "0775";
-      };
-    };
-  };
+#        "create mask" = "0664";
+#        "directory mask" = "0775";
+#      };
+#    };
+#  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
