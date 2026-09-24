@@ -30,7 +30,12 @@
   };
 
   programs.zoxide.enable = true;
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    sessionVariables = {
+      OLLAMA_API_BASE = "http://127.0.0.1:11434";
+    };
+  };
 
   programs.vscode = {
     enable = true;
