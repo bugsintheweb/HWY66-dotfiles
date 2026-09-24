@@ -109,26 +109,19 @@
       };
     };
 
-#  services.samba = {
-#    enable = true;
-    
-#    settings = {
-#      global = {
-#        security = "user";
-#    };
-  
-    # shares go here
-#    shares = {
-#        path = "/srv/shared";
-#        browseable = "yes";
-#        "read only" = "no";
-
-        # Optional but useful:
-#        "create mask" = "0664";
-#        "directory mask" = "0775";
-#      };
-#    };
-#  };
+# External USB shared drive
+  fileSystems."/mnt/shared-drive" = {
+    device = "/dev/disk/by-uuid/FA9C-9105";
+      fsType = "exfat";
+      options = [ 
+        "defaults"
+        "nofail"
+        "x-systemd.automount"
+        "uid=1000"
+        "gid=1000"
+        "noatime"
+      ];
+    };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
