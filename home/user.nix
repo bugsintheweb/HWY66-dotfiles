@@ -11,13 +11,9 @@
   # =========================================================================
   services.mako = {
     enable = true;
-    backgroundColor = "#1a1b26";
-    textColor = "#c0caf5";
-    borderColor = "#7aa2f7";
-    borderRadius = 8;
-    borderSize = 2;
-    defaultTimeout = 5000;
-    font = "JetBrains Mono 11";
+    settings = {
+    default-timeout = 5000;
+    };
   };
 
   # Git Configuration
@@ -64,36 +60,6 @@
     lazygit
     wl-clipboard
 
-    # =========================================================================
-    # FUZZEL CONFIGURATION 
-    # =========================================================================
-
-    xdg.configFile."fuzzel/fuzzel.ini".text = ''
-      [colors]
-      background=1a1b26ff
-      text=c0caf5ff
-      match=7aa2f7ff
-      selection=33467cff
-      selection-text=c0caf5ff
-      border=7aa2f7ff
-
-      [main]
-      font=JetBrains Mono:size=13
-      dpi-aware=no
-      prompt="❯ "
-      icon-theme=Papirus-Dark
-      lines=10
-      width=40
-      horizontal-pad=20
-      vertical-pad=20
-      inner-pad=10
-
-      [border]
-      width=2
-      radius=8
-    'fuzzel.ini' # wait, keep it as text string
-
-
     # Custom Workflow Menu
     (pkgs.writeShellScriptBin "workflow-panel" ''
       OPTIONS="🌐 Open Zen Browser\n📬 Launch Proton Mail Stack\n💻 Open VS Code Projects\n🔄 Reboot System\n🛑 Shutdown Workstation"
@@ -114,6 +80,36 @@
       esac
     '')
   ];
+
+  # =========================================================================
+  # FUZZEL CONFIGURATION 
+  # =========================================================================
+
+  xdg.configFile."fuzzel/fuzzel.ini".text = ''
+    [colors]
+    background=1a1b26ff
+    text=c0caf5ff
+    match=7aa2f7ff
+    selection=33467cff
+    selection-text=c0caf5ff
+    border=7aa2f7ff
+
+    [main]
+    font=JetBrains Mono:size=13
+    dpi-aware=no
+    prompt="❯ "
+    icon-theme=Papirus-Dark
+    lines=10
+    width=40
+    horizontal-pad=20
+    vertical-pad=20
+    inner-pad=10
+
+    [border]
+    width=2
+    radius=8
+  '';
+
 
   # =========================================================================
   # NIRI SCROLLING TILE MANAGER CONFIGURATION
@@ -272,3 +268,4 @@
       };
     };
   };
+}
