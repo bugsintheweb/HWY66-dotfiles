@@ -77,10 +77,13 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  programs.zsh.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."davy" = {
     isNormalUser = true;
     description = "Davy";
+    shell = pkgs.zsh;
     extraGroups = [ 
     "networkmanager" 
     "wheel" 
@@ -220,9 +223,6 @@
 
   # Open ports in the firewall.
 #    networking.firewall.allowedTCPPorts = [ 
-#     445
-#     139
-#     137
 #   ];
 
   # networking.firewall.allowedUDPPorts = [ ... ];
