@@ -6,6 +6,8 @@
 
   programs.home-manager.enable = true;
 
+  fonts.fontconfig.enable = true;
+
   # =========================================================================
   # ADD MAKO NOTIFICATION SERVICE HERE
   # =========================================================================
@@ -50,6 +52,10 @@
     xwayland-satellite # Allows X11 apps to run inside Niri
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     swaylock-effects
+
+    # Fonts
+    font-awesome
+    nerd-fonts.jetbrains-mono
     
     # Omarchy-style CLI utilities
     ripgrep
@@ -59,6 +65,9 @@
     fzf
     lazygit
     wl-clipboard
+
+    # AI Agent Harness
+    aider-chat
 
     # Custom Workflow Menu
     (pkgs.writeShellScriptBin "workflow-panel" ''
@@ -134,10 +143,16 @@
         inactive-color "#${config.lib.stylix.colors.base02}"
       }
     }
+   
+     prefer-no-csd
+
+     window-rule {
+       geometry-corner-radius 12
+       clip-to-geometry true
+    }
 
     // Autostart background processes
-    spawn-at-startup "awww-daemon"
-    spawn-at-startup "awww" "img" "${./wallpaper.jpg}"
+    spawn-at-startup "sh" "-c" "awww-daemon & sleep 0.5 && awww img ${./wallpaper.jpg}"
     spawn-at-startup "waybar"
     spawn-at-startup "xwayland-satellite"
     spawn-at-startup "mako"    
@@ -159,6 +174,7 @@
     // Keybindings
     binds {
       // Core launchers
+      Mod+Shift+Slash { show-hotkey-overlay; }
       Mod+Return { spawn "alacritty"; }
       Mod+D { spawn "fuzzel"; }
       Mod+Alt+Space { spawn "workflow-panel"; }
@@ -210,29 +226,28 @@
         layer = "top";
         position = "top";
         height = 38;
-        spacing = 8;
+        spacing = 12;
         margin-top = 6;
         margin-left = 10;
         margin-right = 10;
 
         modules-left = [ "niri/workspaces" "niri/window" ];
         modules-center = [ "clock" ];
-        modules-right = [ "pulseaudio" "network" "cpu" "memory" "tray" ];
+        modules-right = [ "network" "cpu" "memory" "pulseaudio" "tray" ];
 
         "niri/workspaces" = {
-          format = "{name}";
+          format = "{index}";
           all-outputs = true;
         };
 
         "niri/window" = {
           format = "{}";
-          max-length = 30;
+          max-length = 40;
           separate-outputs = true;
         };
 
         "clock" = {
           format = "{:%H:%M  %a, %b %d}";
-          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         };
 
         "cpu" = {
@@ -246,14 +261,14 @@
 
         "pulseaudio" = {
           format = "{icon} {volume}%";
-          format-bluetooth = "{icon} {volume}%";
-          format-muted = "󰝟";
+          format-bluetooth = "{icon}󰂯 {volume}%";
+          format-muted = "󰝟 Muted";
           format-icons = {
             headphone = "󰋋";
             hands-free = "󰋋";
             headset = "󰋋";
-            phone = "";
-            portable = "";
+            phone = "󰏲";
+            portable = "󰏲";
             default = ["󰕿" "󰖀" "󰕾"];
           };
           on-click = "pavucontrol";
@@ -262,10 +277,78 @@
         "network" = {
           format-wifi = "󰖩 {essid}";
           format-ethernet = "󰈀 Wired";
-          format-disconnected = "󰖪 Disconnected";
+          format-disconnected = "󰖪 Offline";
           tooltip-format = "{ipaddr} ({signalStrength}%)";
         };
       };
     };
+    style = ''
+      * {
+        font-family: "JetBrainsMono Nerd Font", monospace;
+        font-size: 13px;
+        min-height: 0;
+        border: none;
+        box-shadow: none;
+        text-shadow: none;
+      }
+
+      window#waybar {
+        background-color: rgba(26, 27, 38, 0.85);
+        color: #c0caf5;
+        border-radius: 8px;
+      }
+
+      #workspaces {
+        margin: 4px 6px;
+        padding: 0;
+        border: none;
+      }
+
+      #workspaces button {
+        padding: 2px 8px;
+        margin: 0 3px;
+        color: #a9b1d6;
+        background: transparent;
+        border-radius: 6px;
+        border: none;
+        box-shadow: none;
+        transition: all 0.2s ease;
+      }
+
+      #workspaces button:hover {
+        background: #24283b;
+        color: #c0caf5;
+      }
+
+      #workspaces button.active,
+      #workspaces button.focused {
+        background-color: #7aa2f7;
+        color: #1a1b26;
+        font-weight: bold;
+        border: none;
+      }
+
+      #network,
+      #cpu,
+      #memory,
+      #pulseaudio,
+      #clock,
+      #tray,
+      #window {
+        padding: 2px 10px;
+        margin: 4px 2px;
+        border-radius: 6px;
+        background-color: rgba(36, 40, 59, 0.7);
+        color: #c0caf5;
+      }
+
+      #pulseaudio.muted {
+        color: #f7768e;
+      }
+
+      #network.disconnected {
+        color: #f7768e;
+      }
+    '';  
   };
 }

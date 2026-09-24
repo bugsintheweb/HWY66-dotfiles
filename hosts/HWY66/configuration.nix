@@ -98,6 +98,12 @@
  
   # Install docker
   virtualisation.docker.enable = false; 
+  
+  # Enable Ollama daemon
+  services.ollama = {
+    enable = true;
+    # acceleration is omitted so it builds cleanly for pure CPU/AVX2 on your T480
+  };
 
   #Virtualization
   # KVM permissions for user(s)
@@ -192,6 +198,11 @@
   atop
   nvtopPackages.full
   wavemon
+  ];
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    font-awesome
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
