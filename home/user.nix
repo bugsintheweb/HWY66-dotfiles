@@ -6,6 +6,20 @@
 
   programs.home-manager.enable = true;
 
+  # =========================================================================
+  # ADD MAKO NOTIFICATION SERVICE HERE
+  # =========================================================================
+  services.mako = {
+    enable = true;
+    backgroundColor = "#1a1b26";
+    textColor = "#c0caf5";
+    borderColor = "#7aa2f7";
+    borderRadius = 8;
+    borderSize = 2;
+    defaultTimeout = 5000;
+    font = "JetBrains Mono 11";
+  };
+
   # Git Configuration
   programs.git = {
     enable = true;
@@ -39,7 +53,8 @@
     awww
     xwayland-satellite # Allows X11 apps to run inside Niri
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-
+    swaylock-effects
+    
     # Omarchy-style CLI utilities
     ripgrep
     fd
@@ -48,6 +63,36 @@
     fzf
     lazygit
     wl-clipboard
+
+    # =========================================================================
+    # FUZZEL CONFIGURATION 
+    # =========================================================================
+
+    xdg.configFile."fuzzel/fuzzel.ini".text = ''
+      [colors]
+      background=1a1b26ff
+      text=c0caf5ff
+      match=7aa2f7ff
+      selection=33467cff
+      selection-text=c0caf5ff
+      border=7aa2f7ff
+
+      [main]
+      font=JetBrains Mono:size=13
+      dpi-aware=no
+      prompt="❯ "
+      icon-theme=Papirus-Dark
+      lines=10
+      width=40
+      horizontal-pad=20
+      vertical-pad=20
+      inner-pad=10
+
+      [border]
+      width=2
+      radius=8
+    'fuzzel.ini' # wait, keep it as text string
+
 
     # Custom Workflow Menu
     (pkgs.writeShellScriptBin "workflow-panel" ''
@@ -99,6 +144,7 @@
     spawn-at-startup "awww" "img" "${./wallpaper.jpg}"
     spawn-at-startup "waybar"
     spawn-at-startup "xwayland-satellite"
+    spawn-at-startup "mako"    
 
     // Input configuration
     input {
@@ -126,6 +172,7 @@
       Mod+Shift+E { quit; }
       Mod+F { maximize-column; }
       Mod+Shift+F { fullscreen-window; }
+      Mod+Alt+L { spawn "swaylock" "--screenshots" "--clock" "--indicator" "--effect-blur" "7x5"; }
 
       // Vim-style Column & Window navigation
       Mod+H { focus-column-left; }
@@ -166,35 +213,62 @@
       mainBar = {
         layer = "top";
         position = "top";
-        height = 36;
-        spacing = 4;
+        height = 38;
+        spacing = 8;
+        margin-top = 6;
+        margin-left = 10;
+        margin-right = 10;
+
         modules-left = [ "niri/workspaces" "niri/window" ];
         modules-center = [ "clock" ];
-        modules-right = [ "cpu" "memory" "tray" ];
+        modules-right = [ "pulseaudio" "network" "cpu" "memory" "tray" ];
 
         "niri/workspaces" = {
           format = "{name}";
+          all-outputs = true;
         };
 
         "niri/window" = {
-          format = "{title}";
-          max-length = 40;
+          format = "{}";
+          max-length = 30;
+          separate-outputs = true;
         };
 
         "clock" = {
-          format = "{:%H:%M - %a, %b %d}";
+          format = "{:%H:%M  %a, %b %d}";
           tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         };
 
         "cpu" = {
-          format = "CPU: {usage}%";
+          format = "󰻠 {usage}%";
           tooltip = false;
         };
 
         "memory" = {
-          format = "RAM: {}%";
+          format = "󰍛 {}%";
+        };
+
+        "pulseaudio" = {
+          format = "{icon} {volume}%";
+          format-bluetooth = "{icon} {volume}%";
+          format-muted = "󰝟";
+          format-icons = {
+            headphone = "󰋋";
+            hands-free = "󰋋";
+            headset = "󰋋";
+            phone = "";
+            portable = "";
+            default = ["󰕿" "󰖀" "󰕾"];
+          };
+          on-click = "pavucontrol";
+        };
+
+        "network" = {
+          format-wifi = "󰖩 {essid}";
+          format-ethernet = "󰈀 Wired";
+          format-disconnected = "󰖪 Disconnected";
+          tooltip-format = "{ipaddr} ({signalStrength}%)";
         };
       };
     };
   };
-}
