@@ -111,7 +111,7 @@
 
 # External USB shared drive
   fileSystems."/mnt/shared-drive" = {
-    device = "/dev/disk/by-uuid/FA9C-9105";
+    device = "/dev/disk/by-uuid/EAF4-E073";
       fsType = "exfat";
       options = [ 
         "defaults"
