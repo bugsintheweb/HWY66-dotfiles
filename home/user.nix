@@ -83,13 +83,15 @@
     # AI Agent Harness
     aider-chat
 
-    # Custom Workflow Menu
+    # Custom Workflow Menu (Omarchy Style)
     (pkgs.writeShellScriptBin "workflow-panel" ''
-      OPTIONS="🌐 Open Zen Browser\n📬 Launch Proton Mail Stack\n💻 Open VS Code Projects\n🔄 Reboot System\n🛑 Shutdown Workstation"
+      OPTIONS="📱 All Applications\n🌐 Open Zen Browser\n📬 Launch Proton Mail Stack\n💻 Open VS Code Projects\n🔄 Reboot System\n🛑 Shutdown Workstation"
 
-      CHOICE=$(echo -e "$OPTIONS" | ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt="Workflow Tasks: " --lines=5)
+      CHOICE=$(echo -e "$OPTIONS" | ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt="Omarchy Menu: " --lines=6)
 
       case "$CHOICE" in
+        *"All Applications"*)
+          fuzzel ;;
         *"Open Zen Browser"*)
           zen-browser ;;
         *"Launch Proton Mail Stack"*)
@@ -185,48 +187,59 @@
       focus-follows-mouse
     }
 
-    // Keybindings
+    // Keybindings (Omarchy Matched)
     binds {
       // Core launchers
-      Mod+Shift+Slash { show-hotkey-overlay; }
-      Mod+Return { spawn "alacritty"; }
-      Mod+D { spawn "fuzzel"; }
-      Mod+Alt+Space { spawn "workflow-panel"; }
+      Mod+Space { spawn "workflow-panel"; }         // Omarchy menu (apps and everything else)
+      Mod+Alt+Space { spawn "fuzzel"; }             // Apps menu
+      Mod+Return { spawn "alacritty"; }             // Terminal
+      Mod+Shift+Return { spawn "zen-browser"; }     // Browser
+
+      // System Controls
+      Mod+Escape { spawn "workflow-panel"; }        // System menu (suspend, restart, etc)
+      Mod+Ctrl+L { spawn "swaylock" "--screenshots" "--clock" "--indicator" "--effect-blur" "7x5"; } // Lock computer
 
       // Window controls
-      Mod+Shift+Q { close-window; }
-      Mod+Shift+E { quit; }
-      Mod+F { maximize-column; }
-      Mod+Shift+F { fullscreen-window; }
-      Mod+Alt+L { spawn "swaylock" "--screenshots" "--clock" "--indicator" "--effect-blur" "7x5"; }
+      Mod+W { close-window; }                       // Close window
+      Mod+Q { close-window; }                       // Close window (alternate)
+      Mod+F { fullscreen-window; }                  // Go full screen
+      Mod+Alt+F { maximize-column; }                // Go full width
 
-      // Vim-style Column & Window navigation
+      // Arrow Key Navigation (Omarchy standard)
+      Mod+Left { focus-column-left; }
+      Mod+Right { focus-column-right; }
+      Mod+Down { focus-window-down; }
+      Mod+Up { focus-window-up; }
+
+      // Vim-style Navigation (Kept for convenience)
       Mod+H { focus-column-left; }
       Mod+L { focus-column-right; }
       Mod+J { focus-window-down; }
       Mod+K { focus-window-up; }
 
-      // Column & Window movement
-      Mod+Shift+H { move-column-left; }
-      Mod+Shift+L { move-column-right; }
-      Mod+Shift+J { move-window-down; }
-      Mod+Shift+K { move-window-up; }
+      // Window Movement
+      Mod+Shift+Left { move-column-left; }
+      Mod+Shift+Right { move-column-right; }
+      Mod+Shift+Down { move-window-down; }
+      Mod+Shift+Up { move-window-up; }
 
-      // Workspace switching (vertical navigation in Niri)
+      // Workspace switching 
       Mod+1 { focus-workspace 1; }
       Mod+2 { focus-workspace 2; }
       Mod+3 { focus-workspace 3; }
       Mod+4 { focus-workspace 4; }
+      Mod+Tab { focus-workspace-down; }             // Jump to next workspace
+      Mod+Shift+Tab { focus-workspace-up; }         // Jump to previous workspace
 
+      // Moving windows to workspaces
       Mod+Shift+1 { move-window-to-workspace 1; }
       Mod+Shift+2 { move-window-to-workspace 2; }
       Mod+Shift+3 { move-window-to-workspace 3; }
       Mod+Shift+4 { move-window-to-workspace 4; }
 
-      // Column resizing
-      Mod+R { switch-preset-column-width; }
-      Mod+Minus { set-column-width "-10%"; }
-      Mod+Equal { set-column-width "+10%"; }
+      // Window resizing
+      Mod+Minus { set-column-width "-10%"; }        // Shrink window
+      Mod+Equal { set-column-width "+10%"; }        // Expand window
     }
   '';
 
